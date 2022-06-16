@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SearchRepository @Inject constructor() {
 
 
-    fun searchInRestaurantList(searchedText:String, displaySet: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant> ){
+ suspend fun searchInRestaurantList(searchedText:String, displaySet: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant> ){
 
         restaurantList.forEach { restaurant ->
 
@@ -34,7 +34,7 @@ class SearchRepository @Inject constructor() {
 
     }
 
-    fun searchInMenuMap(searchedText:String, menuMap: HashMap<Int?, MenuJson.Menu?>, displaySet: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant>){
+  suspend  fun searchInMenuMap(searchedText:String, menuMap: HashMap<Int?, MenuJson.Menu?>, displaySet: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant>){
 
         menuMap.forEach { (_, value) ->
 
