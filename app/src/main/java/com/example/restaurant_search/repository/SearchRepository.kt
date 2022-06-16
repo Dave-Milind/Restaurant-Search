@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SearchRepository @Inject constructor() {
 
 
-    fun searchInRestaurantList(searchedText:String, displayList: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant> ){
+    fun searchInRestaurantList(searchedText:String, displaySet: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant> ){
 
         restaurantList.forEach { restaurant ->
 
@@ -18,7 +18,7 @@ class SearchRepository @Inject constructor() {
                 restaurant.neighborhood?.contains(searchedText, ignoreCase = true) == true
             ) {
 
-                displayList.add(restaurant)
+                displaySet.add(restaurant)
             }
 
             restaurant.reviews?.forEach { review ->
@@ -26,7 +26,7 @@ class SearchRepository @Inject constructor() {
                if( review?.comments?.contains(searchedText, ignoreCase = true) == true ||
                    review?.name?.contains(searchedText, ignoreCase = true) == true
                ){
-                   displayList.add(restaurant)
+                   displaySet.add(restaurant)
                }
 
             }
@@ -34,21 +34,21 @@ class SearchRepository @Inject constructor() {
 
     }
 
-    fun searchInMenuMap(searchedText:String, menuMap: HashMap<Int?, MenuJson.Menu?>, displayList: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant>){
+    fun searchInMenuMap(searchedText:String, menuMap: HashMap<Int?, MenuJson.Menu?>, displaySet: HashSet<RestaurantJson.Restaurant?>, restaurantList:ArrayList<RestaurantJson.Restaurant>){
 
         menuMap.forEach { (_, value) ->
 
             value?.categories?.forEach { category ->
 
                 if(category?.name?.contains(searchedText, ignoreCase = true) == true){
-                    displayList.add(restaurantList.find { it.id == value.restaurantId })
+                    displaySet.add(restaurantList.find { it.id == value.restaurantId })
                 }
                 category?.menuItems?.forEach { menuItem ->
 
                     if (menuItem?.name?.contains(searchedText, ignoreCase = true) == true ||
                         menuItem?.description?.contains(searchedText, ignoreCase = true) == true ||
                         menuItem?.price?.contains(searchedText, ignoreCase = true) == true) {
-                        displayList.add(restaurantList.find { it.id == value.restaurantId })
+                        displaySet.add(restaurantList.find { it.id == value.restaurantId })
                     }
 
                 }
