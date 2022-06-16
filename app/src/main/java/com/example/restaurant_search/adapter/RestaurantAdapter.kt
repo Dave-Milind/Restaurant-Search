@@ -6,38 +6,33 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.restaurant_search.databinding.RowRestaurantBinding
 import com.example.restaurant_search.models.MenuJson
 import com.example.restaurant_search.models.RestaurantJson
-import com.example.restaurant_search.utils.Utils
 
 class RestaurantAdapter(
-    var restuarantList: HashSet<RestaurantJson.Restaurant?>,
+    private var restaurantsList: HashSet<RestaurantJson.Restaurant?>,
     var menuMap: HashMap<Int?, MenuJson.Menu?>
 ) : RecyclerView.Adapter<RestaurantAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): RestaurantAdapter.MyViewHolder {
+    ): MyViewHolder {
         val binding =
             RowRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return RestaurantAdapter.MyViewHolder(binding)
+        return MyViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: RestaurantAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        restuarantList.elementAt(position)?.let { restaurant ->
-
+        restaurantsList.elementAt(position)?.let { restaurant ->
             holder.bind(restaurant)
-
-            holder.binding.tvMenu.text = Utils.getMenuString(getCategoryList(restaurant.id))
         }
-
 
     }
 
     // return the size of languageList
     override fun getItemCount(): Int {
-        return restuarantList.size
+        return restaurantsList.size
     }
 
     class MyViewHolder(val binding: RowRestaurantBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -46,6 +41,7 @@ class RestaurantAdapter(
 
             binding.tvRestuarantName.text = restaurant.name
             binding.tvCuisineType.text = restaurant.cuisineType
+            binding.tvNeighborhood.text = restaurant.neighborhood
         }
 
 

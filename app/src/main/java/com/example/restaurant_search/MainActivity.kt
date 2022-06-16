@@ -1,23 +1,22 @@
 package com.example.restaurant_search
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.restaurant_search.adapter.RestaurantAdapter
 import com.example.restaurant_search.databinding.ActivityMainBinding
-import com.example.restaurant_search.models.MenuJson
 import com.example.restaurant_search.models.RestaurantJson
 import com.example.restaurant_search.utils.AppConstants
-import com.example.restaurant_search.utils.SearchUtils
 import com.example.restaurant_search.utils.Utils
+import com.example.restaurant_search.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
-
-    val menuMap: HashMap<Int?, MenuJson.Menu?> by lazy { HashMap() }
-    lateinit var restaurantList: ArrayList<RestaurantJson.Restaurant>
-    val displaySet: HashSet<RestaurantJson.Restaurant?> by lazy { HashSet() }
+    val mainViewModel: MainViewModel by viewModels()
     lateinit var restaurantAdapter: RestaurantAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,34 +25,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         init()
-
+        setListener()
     }
 
-
-    fun init() {
-
-        setListener()
-
+    private fun init() {
         Utils.getObjFromJson(
-            context = baseContext,
+            baseContext,
             AppConstants.RESTAURANT_JSON,
-            RestaurantJson::class
-        )?.let {
-
-            setRecyclerview(it)
-
+            RestaurantJson::class)?.let {
+            setRecyclerView(it)
         }
     }
 
-    fun setRecyclerview(restaurantJson: RestaurantJson) {
+    private fun setRecyclerView(restaurantJson: RestaurantJson) {
 
         restaurantJson.restaurants?.let { restaurantList ->
-
-            this.restaurantList = restaurantList
-            displaySet.addAll(restaurantList)
-            SearchUtils.createMenuMap(baseContext, menuMap, restaurantList)
+            mainViewModel.setData(baseContext, restaurantList)
             binding.rvRestaurant.layoutManager = LinearLayoutManager(this)
-            RestaurantAdapter(displaySet, menuMap).let {
+            RestaurantAdapter(mainViewModel.displaySet, mainViewModel.menuMap).let {
                 restaurantAdapter = it
                 binding.rvRestaurant.adapter = restaurantAdapter
             }
@@ -61,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setListener() {
+    private fun setListener() {
 
         binding.svRestaurant.setOnClickListener { binding.svRestaurant.onActionViewExpanded() }
         binding.svRestaurant.setOnQueryTextListener(object :
@@ -69,19 +58,15 @@ class MainActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(newText: String): Boolean {
 
-                displaySet.clear()
-
-                SearchUtils.searchInRestaurantList(newText, displaySet, restaurantList)
-                SearchUtils.searchInMenuMap(newText, menuMap, displaySet, restaurantList)
-
+                mainViewModel.displaySet.clear()
+                mainViewModel.searchInRestaurantList(newText)
+                mainViewModel.searchInMenuList(newText)
                 restaurantAdapter.notifyDataSetChanged()
 
                 return false
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-
-
                 return false
             }
 
